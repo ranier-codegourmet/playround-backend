@@ -1,0 +1,20 @@
+{
+  "name": "@repo/nest-basic-types",
+  "version": "0.0.0",
+  "private": true,
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "README.md"
+  ],
+  "scripts": {
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint \"{src,apps,libs}/**/*.ts\" --fix",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:^",
+    "typescript": "^5.3.3"
+  }
+}

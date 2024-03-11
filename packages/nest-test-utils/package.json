@@ -1,0 +1,22 @@
+{
+  "name": "@repo/nest-test-utils",
+  "version": "0.0.0",
+  "private": true,
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "README.md"
+  ],
+  "scripts": {
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint \"{src,apps,libs}/**/*.ts\" --fix",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:^",
+    "@types/jsonwebtoken": "^9.0.6",
+    "jsonwebtoken": "^9.0.2",
+    "typescript": "^5.3.3"
+  }
+}

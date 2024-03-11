@@ -1,0 +1,31 @@
+{
+  "name": "@repo/nest-organization-module",
+  "version": "0.0.0",
+  "private": true,
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "README.md"
+  ],
+  "scripts": {
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint \"{src,apps,libs}/**/*.ts\" --fix",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:^",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@nestjs/common": "^10.3.3",
+    "@nestjs/config": "^3.2.0",
+    "@nestjs/core": "^10.3.3",
+    "@nestjs/jwt": "^10.2.0",
+    "@nestjs/mongoose": "^10.0.4",
+    "@repo/nest-mongo-database": "workspace:^",
+    "@repo/nest-user-module": "workspace:^",
+    "class-validator": "^0.14.1",
+    "joi": "^17.12.2"
+  }
+}
