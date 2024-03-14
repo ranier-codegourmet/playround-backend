@@ -14,7 +14,7 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:^",
+    "@repo/eslint-config": "workspace:*",
     "typescript": "^5.3.3"
   },
   "dependencies": {
@@ -23,8 +23,8 @@
     "@nestjs/core": "^10.3.3",
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/mongoose": "^10.0.4",
-    "@repo/nest-mongo-database": "workspace:^",
-    "@repo/nest-user-module": "workspace:^",
+    "@repo/nest-mongo-database": "workspace:*",
+    "@repo/nest-user-module": "workspace:*",
     "class-validator": "^0.14.1",
     "joi": "^17.12.2"
   }

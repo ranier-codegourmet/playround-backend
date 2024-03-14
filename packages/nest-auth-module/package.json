@@ -14,7 +14,7 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:^",
+    "@repo/eslint-config": "workspace:*",
     "@types/passport-jwt": "^4.0.1",
     "typescript": "^5.3.3"
   },
@@ -23,8 +23,8 @@
     "@nestjs/config": "^3.2.0",
     "@nestjs/core": "^10.3.3",
     "@nestjs/passport": "^10.0.3",
-    "@repo/nest-organization-module": "workspace:^",
-    "@repo/nest-user-module": "workspace:^",
+    "@repo/nest-organization-module": "workspace:*",
+    "@repo/nest-user-module": "workspace:*",
     "bcrypt": "^5.1.1",
     "joi": "^17.12.2",
     "passport-jwt": "^4.0.1",
