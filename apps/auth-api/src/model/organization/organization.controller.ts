@@ -29,7 +29,7 @@ export class OrganizationController {
 
   constructor(
     private readonly organizationService: OrganizationService,
-    private readonly userService: UserService,
+    private readonly userService: UserService
   ) {}
 
   // TODO: disable registration until we can launch the system to the public
@@ -37,7 +37,7 @@ export class OrganizationController {
   @Post()
   async createOrganization(
     @Body() organization: CreateOrganizationDto,
-    @UseUserCredentials() userCredentials: UserCredentials,
+    @UseUserCredentials() userCredentials: UserCredentials
   ): Promise<{ access_token: string }> {
     throw new NotImplementedException('Registration is disabled');
 
@@ -47,12 +47,12 @@ export class OrganizationController {
 
     const newOrganization = await this.organizationService.create(
       organization,
-      user,
+      user
     );
 
     const token = await this.organizationService.generateOrganizationToken(
       newOrganization,
-      user,
+      user
     );
 
     return {
@@ -61,16 +61,16 @@ export class OrganizationController {
   }
 
   @UseGuards(JwtOrgAuthGuard)
-  @Get('/')
+  @Get('current')
   async getOrganization(
-    @UseUserOrgCredentials() UserOrgs: UserOrganizationCredentials,
+    @UseUserOrgCredentials() UserOrgs: UserOrganizationCredentials
   ): Promise<BasicApiResponse<Organization>> {
     this.logger.log(
-      `Getting organization details for: ${UserOrgs.organization.id}`,
+      `Getting organization details for: ${UserOrgs.organization.id}`
     );
 
     const organization = await this.organizationService.getOrganizationById(
-      UserOrgs.organization.id,
+      UserOrgs.organization.id
     );
 
     return {

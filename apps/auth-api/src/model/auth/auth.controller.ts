@@ -6,14 +6,12 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
 import { LocalAuthGuard, UseUserCredentials } from '@repo/nest-auth-module';
 import { User } from '@repo/nest-user-module';
 
 import { CreateUserDTO } from './auth.dto';
 import { AuthService } from './auth.service';
 
-@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   private logger: Logger = new Logger(AuthController.name);

@@ -1,27 +1,22 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { AtLeastOneFieldRequired } from '@repo/nest-custom-validator';
 import { IsEmail, IsOptional, IsString } from 'class-validator';
 
 export class UpdateUserDTO {
   @IsOptional()
   @IsString()
-  @ApiProperty()
-  firstName: string;
+  firstName?: string;
 
   @IsOptional()
   @IsString()
-  @ApiProperty()
-  lastName: string;
+  lastName?: string;
 
   @IsOptional()
   @IsString()
-  @ApiProperty()
-  gender: string;
+  gender?: string;
 
   @IsOptional()
   @IsEmail()
-  @ApiProperty()
-  email: string;
+  email?: string;
 
   @AtLeastOneFieldRequired(['firstName', 'lastName', 'gender', 'email'])
   dummyField = '';

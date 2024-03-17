@@ -1,11 +1,9 @@
 import { Controller, Logger, Post, UseGuards } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LocalAuthGuard, UseUserCredentials } from '@repo/nest-auth-module';
 import { User } from '@repo/nest-user-module';
 
 import { AuthService } from './auth.service';
 
-@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   private logger: Logger = new Logger(AuthController.name);
@@ -14,14 +12,6 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  @ApiResponse({
-    status: 201,
-    schema: {
-      example: {
-        access_token: 'eyJhbGci',
-      },
-    },
-  })
   async login(
     @UseUserCredentials() user: User,
   ): Promise<{ access_token: string }> {

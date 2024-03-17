@@ -4,6 +4,7 @@ import { MongoDatabaseModule } from '@repo/nest-mongo-database';
 import * as Joi from 'joi';
 
 import { AuthModule } from './model/auth/auth.module';
+import { HealthCheckModule } from './model/health-check/health-check.module';
 import { OrganizationModule } from './model/organization/organization.module';
 import { SetupModule } from './model/setup/setup.module';
 
@@ -15,7 +16,7 @@ import { SetupModule } from './model/setup/setup.module';
         process.env.NODE_ENV === 'test' ? '.test' : ''
       }`,
       validationSchema: Joi.object({
-        PORT: Joi.number().required(),
+        PORT: Joi.required(),
       }),
       validationOptions: {
         allowUnknown: true,
@@ -25,6 +26,7 @@ import { SetupModule } from './model/setup/setup.module';
     AuthModule,
     OrganizationModule,
     SetupModule,
+    HealthCheckModule,
   ],
 })
 export class AppModule {}

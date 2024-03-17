@@ -19,6 +19,8 @@ export class Warehouse {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Organization',
+    index: true,
+    required: true,
   })
   organization: string;
 }

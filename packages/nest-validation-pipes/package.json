@@ -1,5 +1,5 @@
 {
-  "name": "@repo/nest-basic-types",
+  "name": "@repo/nest-validation-pipes",
   "version": "0.0.0",
   "private": true,
   "main": "lib/index.js",
@@ -18,7 +18,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.1"
+    "@nestjs/common": "^10.3.3",
+    "mongoose": "^8.2.1"
   }
 }

@@ -22,13 +22,11 @@ export class OrganizationRepository {
     update: UpdateQuery<Organization>,
     options: QueryOptions = {},
   ): Promise<Organization> {
-    return this.organizationModel
-      .findOneAndUpdate(filter, update, {
-        new: true,
-        upsert: true,
-        ...options,
-      })
-      .lean();
+    return this.organizationModel.findOneAndUpdate(filter, update, {
+      new: true,
+      upsert: true,
+      ...options,
+    });
   }
 
   async findOne(
@@ -36,6 +34,6 @@ export class OrganizationRepository {
     projection?: ProjectionType<Organization>,
     options?: QueryOptions<Organization>,
   ): Promise<Organization | null> {
-    return this.organizationModel.findOne(filter, projection, options).lean();
+    return this.organizationModel.findOne(filter, projection, options);
   }
 }

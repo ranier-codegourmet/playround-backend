@@ -22,13 +22,11 @@ export class UserRepository {
     update: UpdateQuery<User>,
     options: QueryOptions<User> = {}
   ): Promise<User> {
-    return this.userModel
-      .findOneAndUpdate(filter, update, {
-        new: true,
-        upsert: true,
-        ...options,
-      })
-      .lean();
+    return this.userModel.findOneAndUpdate(filter, update, {
+      new: true,
+      upsert: true,
+      ...options,
+    });
   }
 
   async findOne(
@@ -36,7 +34,7 @@ export class UserRepository {
     projection?: ProjectionType<User>,
     options?: QueryOptions<User>
   ): Promise<User | null> {
-    return this.userModel.findOne(filter, projection, options).lean();
+    return this.userModel.findOne(filter, projection, options);
   }
 
   async findById(
@@ -44,6 +42,6 @@ export class UserRepository {
     projection?: ProjectionType<User>,
     options?: QueryOptions<User>
   ): Promise<User | null> {
-    return this.userModel.findById(id, projection, options).lean();
+    return this.userModel.findById(id, projection, options);
   }
 }

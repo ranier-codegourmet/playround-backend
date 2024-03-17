@@ -28,7 +28,6 @@
     "@nestjs/mongoose": "^10.0.4",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.3.3",
-    "@nestjs/swagger": "^7.3.0",
     "@repo/nest-auth-module": "workspace:*",
     "@repo/nest-basic-types": "workspace:*",
     "@repo/nest-mongo-database": "workspace:*",

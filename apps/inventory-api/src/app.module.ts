@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongoDatabaseModule } from '@repo/nest-mongo-database';
 import * as Joi from 'joi';
 
+import { InventoryModule } from './model/inventory/inventory.module';
 import { WarehouseModule } from './model/warehouse/warehouse.module';
 
 @Module({
@@ -21,6 +22,7 @@ import { WarehouseModule } from './model/warehouse/warehouse.module';
       },
     }),
     WarehouseModule,
+    InventoryModule,
   ],
 })
 export class AppModule {}

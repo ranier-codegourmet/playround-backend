@@ -7,7 +7,6 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   JwtOrgAuthGuard,
   UserOrganizationCredentials,
@@ -17,7 +16,6 @@ import { UserService } from '@repo/nest-user-module';
 
 import { UpdateUserDTO } from './user.dto';
 
-@ApiTags('user')
 @Controller('user')
 export class UserController {
   private logger: Logger = new Logger(UserController.name);
@@ -26,22 +24,6 @@ export class UserController {
 
   @UseGuards(JwtOrgAuthGuard)
   @Get('current')
-  @ApiResponse({
-    status: 200,
-    schema: {
-      example: {
-        data: {
-          _id: '1',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'test@test.com',
-          gender: 'Male',
-          createdAt: '2021-08-30T16:27:31.000Z',
-          updatedAt: '2021-08-30T16:27:31.000Z',
-        },
-      },
-    },
-  })
   async getCurrentUser(
     @UseUserOrgCredentials() userOrgCrentials: UserOrganizationCredentials
   ) {
@@ -62,22 +44,6 @@ export class UserController {
 
   @UseGuards(JwtOrgAuthGuard)
   @Put('current')
-  @ApiResponse({
-    status: 200,
-    schema: {
-      example: {
-        data: {
-          _id: '1',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'test@test.com',
-          gender: 'Male',
-          createdAt: '2021-08-30T16:27:31.000Z',
-          updatedAt: '2021-08-30T16:27:31.000Z',
-        },
-      },
-    },
-  })
   async updateCurrentUser(
     @UseUserOrgCredentials() userOrgCrentials: UserOrganizationCredentials,
     @Body() payload: UpdateUserDTO

@@ -4,10 +4,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { JwtOrgStrategy } from '@repo/nest-auth-module';
 import * as Joi from 'joi';
 
-import { WarehouseController } from './warehouse.controller';
-import { WarehouseRepository } from './warehouse.repository';
-import { Warehouse, WarehouseSchema } from './warehouse.schema';
-import { WarehouseService } from './warehouse.service';
+import { InventoryController } from './inventory.controller';
+import { InventoryRepository } from './inventory.repository';
+import { Inventory, InventorySchema } from './inventory.schema';
+import { InventoryService } from './inventory.service';
 
 @Module({
   imports: [
@@ -24,11 +24,11 @@ import { WarehouseService } from './warehouse.service';
       },
     }),
     MongooseModule.forFeature([
-      { name: Warehouse.name, schema: WarehouseSchema },
+      { name: Inventory.name, schema: InventorySchema },
     ]),
   ],
-  controllers: [WarehouseController],
-  providers: [WarehouseService, WarehouseRepository, JwtOrgStrategy],
+  controllers: [InventoryController],
+  providers: [InventoryService, InventoryRepository, JwtOrgStrategy],
   exports: [],
 })
-export class WarehouseModule {}
+export class InventoryModule {}
