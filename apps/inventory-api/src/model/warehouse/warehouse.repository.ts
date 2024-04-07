@@ -135,4 +135,8 @@ export class WarehouseRepository {
       totalCount: grid[0].totalCount,
     };
   }
+
+  async deleteById(id: string): Promise<Warehouse | null> {
+    return this.warehouseModel.findByIdAndDelete(id).lean();
+  }
 }

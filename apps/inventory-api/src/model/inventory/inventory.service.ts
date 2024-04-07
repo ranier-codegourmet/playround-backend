@@ -84,4 +84,14 @@ export class InventoryService {
 
     return grid;
   }
+
+  async removeWarehouseFromAllInventory(
+    organizationId: string,
+    warehouseId: string,
+  ): Promise<void> {
+    await this.inventoryRepository.updateMany(
+      { organization: organizationId },
+      { $pull: { warehouses: warehouseId } },
+    );
+  }
 }

@@ -1,13 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { MongoSortOrderEnum, SortOrderEnum } from '@repo/nest-basic-types';
 
+import { InventoryService } from '../inventory/inventory.service';
 import { WarehouseGridDTO } from './warehouse.dto';
 import { WarehouseRepository } from './warehouse.repository';
 import { Warehouse } from './warehouse.schema';
 
 @Injectable()
 export class WarehouseService {
-  constructor(private readonly warehouseRepository: WarehouseRepository) {}
+  constructor(
+    private readonly warehouseRepository: WarehouseRepository,
+    private readonly inventoryService: InventoryService,
+  ) {}
 
   async create(payload: Partial<Warehouse>) {
     const warehouse = await this.warehouseRepository.findOne({
@@ -83,5 +87,20 @@ export class WarehouseService {
     );
 
     return grid;
+  }
+
+  async deleteById(id: string): Promise<void> {
+    const warehouse = await this.warehouseRepository.findById(id);
+
+    if (!warehouse) {
+      throw new BadRequestException('Warehouse not found');
+    }
+
+    await this.inventoryService.removeWarehouseFromAllInventory(
+      warehouse.organization,
+      id,
+    );
+
+    await this.warehouseRepository.deleteById(id);
   }
 }

@@ -8,6 +8,7 @@ import {
   ProjectionType,
   QueryOptions,
   UpdateQuery,
+  UpdateWriteOpResult,
 } from 'mongoose';
 
 import { RepositoryInventorySort } from './inventory.interface';
@@ -169,5 +170,14 @@ export class InventoryRepository {
       data: grid[0].data,
       totalCount: grid[0].totalCount,
     };
+  }
+
+  async updateMany(
+    filter: FilterQuery<Inventory>,
+    update: UpdateQuery<Inventory>,
+  ): Promise<UpdateWriteOpResult> {
+    return this.inventoryModel.updateMany(filter, update, {
+      new: true,
+    });
   }
 }

@@ -29,6 +29,6 @@ import { InventoryService } from './inventory.service';
   ],
   controllers: [InventoryController],
   providers: [InventoryService, InventoryRepository, JwtOrgStrategy],
-  exports: [],
+  exports: [InventoryService],
 })
 export class InventoryModule {}

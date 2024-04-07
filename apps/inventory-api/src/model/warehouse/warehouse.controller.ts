@@ -1,16 +1,15 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Logger,
   Param,
   Post,
   Put,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import {
-  JwtOrgAuthGuard,
   UserOrganizationCredentials,
   UseUserOrgCredentials,
 } from '@repo/nest-auth-module';
@@ -29,7 +28,6 @@ export class WarehouseController {
 
   constructor(private readonly warehouseService: WarehouseService) {}
 
-  @UseGuards(JwtOrgAuthGuard)
   @Post()
   async createWarehouse(
     @UseUserOrgCredentials() userOrgCrentials: UserOrganizationCredentials,
@@ -45,7 +43,6 @@ export class WarehouseController {
     });
   }
 
-  @UseGuards(JwtOrgAuthGuard)
   @Get()
   async grid(
     @UseUserOrgCredentials() userOrgCrentials: UserOrganizationCredentials,
@@ -60,7 +57,6 @@ export class WarehouseController {
     return this.warehouseService.grid(query, userOrgCrentials.organization.id);
   }
 
-  @UseGuards(JwtOrgAuthGuard)
   @Put('/:id')
   async updateWarehouse(
     @UseUserOrgCredentials() userOrgCrentials: UserOrganizationCredentials,
@@ -78,6 +74,22 @@ export class WarehouseController {
 
     return {
       data: updatedWarehouse,
+    };
+  }
+
+  @Delete('/:id')
+  async deleteWarehouse(
+    @UseUserOrgCredentials() userOrgCrentials: UserOrganizationCredentials,
+    @Param('id', new ValidateObjectIdPipe()) id: string,
+  ) {
+    this.logger.log(
+      `Deleting warehouse: ${id} by ${userOrgCrentials.user.email} for ${userOrgCrentials.organization.id}`,
+    );
+
+    await this.warehouseService.deleteById(id);
+
+    return {
+      message: 'Warehouse deleted successfully',
     };
   }
 }
