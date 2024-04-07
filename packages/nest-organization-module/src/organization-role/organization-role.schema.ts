@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 
-import { OrganizationMember } from '../organization-member/organization-member.schema';
 import { RoleEnum } from './organization-role.interface';
 
 @Schema({
@@ -22,7 +21,7 @@ export class OrganizationRole {
     ref: 'OrganizationMember',
     required: true,
   })
-  organizationMember: OrganizationMember;
+  organizationMember: string;
 }
 
 export const OrganizationRoleSchema =

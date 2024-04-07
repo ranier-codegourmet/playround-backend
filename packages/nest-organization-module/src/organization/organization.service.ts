@@ -42,8 +42,8 @@ export class OrganizationService {
 
         const organizationMember = await this.organizationMemberService.create(
           {
-            organization: newOrganization,
-            user,
+            organization: newOrganization._id,
+            user: user._id,
             status: OrganizationMemberStatusEnum.ACCEPTED,
           },
           session,
@@ -51,7 +51,7 @@ export class OrganizationService {
 
         const organizationRole = await this.organizationRoleService.create(
           {
-            organizationMember: organizationMember,
+            organizationMember: organizationMember._id,
             role: RoleEnum.OWNER,
           },
           session,

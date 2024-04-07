@@ -1,8 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { User } from '@repo/nest-user-module';
 import * as mongoose from 'mongoose';
 
-import { Organization } from '../organization/organization.schema';
 import { OrganizationMemberStatusEnum } from './organization-member.interface';
 
 @Schema({
@@ -16,10 +14,10 @@ export class OrganizationMember {
     ref: 'Organization',
     required: true,
   })
-  organization: Organization;
+  organization: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  user: User;
+  user: string;
 
   @Prop({
     type: String,

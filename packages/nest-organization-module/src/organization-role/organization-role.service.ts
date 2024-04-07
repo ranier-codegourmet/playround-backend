@@ -28,7 +28,7 @@ export class OrganizationRoleService {
     organizationMember: OrganizationMember,
   ): Promise<OrganizationRole | null> {
     return this.organizationRoleRepository.findOne({
-      organizationMember: organizationMember,
+      organizationMember: organizationMember._id,
     });
   }
 }
