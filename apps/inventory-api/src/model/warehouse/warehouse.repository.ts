@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import {
+  ClientSession,
   FilterQuery,
   Model,
   PipelineStage,
   ProjectionType,
   QueryOptions,
   UpdateQuery,
+  UpdateWriteOpResult,
 } from 'mongoose';
 
 import { RepositoryWarehouseSort } from './warehouse.interface';
@@ -23,15 +25,12 @@ export class WarehouseRepository {
   async findOneAndUpdate(
     filter: FilterQuery<Warehouse>,
     update: UpdateQuery<Warehouse>,
-    options: QueryOptions<Warehouse>,
+    options?: QueryOptions<Warehouse>,
   ): Promise<Warehouse> {
-    return this.warehouseModel
-      .findOneAndUpdate(filter, update, {
-        new: true,
-        upsert: true,
-        ...options,
-      })
-      .lean();
+    return this.warehouseModel.findOneAndUpdate(filter, update, {
+      new: true,
+      ...options,
+    });
   }
 
   async findOne(
@@ -69,7 +68,97 @@ export class WarehouseRepository {
     totalCount: number;
   }> {
     const facets: Record<string, PipelineStage.FacetPipelineStage[]> = {
-      data: [],
+      data: [
+        {
+          $addFields: {
+            isItemsEmpty: { $eq: [{ $size: '$items' }, 0] },
+          },
+        },
+        {
+          $unwind: {
+            path: '$items',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $lookup: {
+            from: 'inventories',
+            localField: 'items.id',
+            foreignField: '_id',
+            pipeline: [
+              {
+                $project: {
+                  _id: 1,
+                  name: 1,
+                },
+              },
+            ],
+            as: 'details',
+          },
+        },
+        {
+          $unwind: {
+            path: '$details',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $addFields: {
+            'items.details': '$details',
+          },
+        },
+        {
+          $group: {
+            _id: { _id: '$_id', type: '$items.type' },
+            root: { $mergeObjects: '$$ROOT' },
+            items: { $push: '$items.details' },
+            isItemsEmpty: { $first: '$isItemsEmpty' },
+          },
+        },
+        {
+          $group: {
+            _id: '$_id._id',
+            itemsByType: {
+              $push: {
+                type: '$_id.type',
+                items: '$items',
+              },
+            },
+            root: { $mergeObjects: '$$ROOT' },
+            isItemsEmpty: { $first: '$isItemsEmpty' },
+          },
+        },
+        {
+          $addFields: {
+            itemsByType: {
+              $cond: {
+                if: '$isItemsEmpty',
+                then: [],
+                else: '$itemsByType',
+              },
+            },
+          },
+        },
+        {
+          $project: {
+            isItemsEmpty: 0,
+            'itemsByType.items.type': 0,
+          },
+        },
+        {
+          $replaceRoot: {
+            newRoot: {
+              $mergeObjects: ['$root.root', { items: '$itemsByType' }],
+            },
+          },
+        },
+        {
+          $project: {
+            details: 0,
+            isItemsEmpty: 0,
+          },
+        },
+      ],
       totalCount: [
         {
           $count: 'count',
@@ -138,5 +227,16 @@ export class WarehouseRepository {
 
   async deleteById(id: string): Promise<Warehouse | null> {
     return this.warehouseModel.findByIdAndDelete(id).lean();
+  }
+
+  async updateMany(
+    filter: FilterQuery<Warehouse>,
+    update: UpdateQuery<Warehouse>,
+    session?: ClientSession,
+  ): Promise<UpdateWriteOpResult> {
+    return this.warehouseModel.updateMany(filter, update, {
+      new: true,
+      session,
+    });
   }
 }

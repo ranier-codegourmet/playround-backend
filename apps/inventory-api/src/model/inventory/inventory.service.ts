@@ -1,15 +1,22 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { MongoSortOrderEnum, SortOrderEnum } from '@repo/nest-basic-types';
+import { TransactionService } from '@repo/nest-mongo-database';
 
+import { ItemEnum } from '../warehouse/warehouse.interface';
+import { WarehouseService } from '../warehouse/warehouse.service';
 import { InventoryGridDTO } from './inventory.dto';
 import { InventoryRepository } from './inventory.repository';
 import { Inventory } from './inventory.schema';
 
 @Injectable()
 export class InventoryService {
-  constructor(private readonly inventoryRepository: InventoryRepository) {}
+  constructor(
+    private readonly inventoryRepository: InventoryRepository,
+    private readonly warehouseService: WarehouseService,
+    private readonly transactionService: TransactionService,
+  ) {}
 
-  async create(payload: Partial<Inventory>) {
+  async create(payload: Partial<Inventory>, warehouses?: string[]) {
     const inventory = await this.inventoryRepository.findOne({
       name: payload.name,
       organization: payload.organization,
@@ -19,18 +26,40 @@ export class InventoryService {
       throw new BadRequestException('Inventory with this name already exists');
     }
 
-    return this.inventoryRepository.findOneAndUpdate(
-      {
-        name: payload.name,
+    return this.transactionService.withTransaction<Inventory>(
+      async (session) => {
+        const inventory = await this.inventoryRepository.findOneAndUpdate(
+          {
+            name: payload.name,
+          },
+          payload,
+          { session, projection: { __v: 0 } },
+        );
+
+        if (warehouses && warehouses.length > 0) {
+          await Promise.all(
+            warehouses.map(async (warehouse) =>
+              this.warehouseService.addItem(
+                warehouse,
+                {
+                  id: inventory._id,
+                  type: ItemEnum.INVENTORY,
+                },
+                session,
+              ),
+            ),
+          );
+        }
+
+        return inventory;
       },
-      payload,
-      { projection: { __v: 0 } },
     );
   }
 
   async updateById(
     id: string,
     inventory: Partial<Inventory>,
+    warehouses?: string[],
   ): Promise<Inventory> {
     const existingInventory = await this.inventoryRepository.findById(id);
 
@@ -48,9 +77,40 @@ export class InventoryService {
       throw new BadRequestException('Inventory with this name already exists');
     }
 
-    return this.inventoryRepository.findOneAndUpdate({ _id: id }, inventory, {
-      projection: { __v: 0 },
-    });
+    return this.transactionService.withTransaction<Inventory>(
+      async (session) => {
+        const newInventory = await this.inventoryRepository.findOneAndUpdate(
+          { _id: id },
+          inventory,
+          {
+            projection: { __v: 0 },
+            session,
+          },
+        );
+
+        await this.warehouseService.removeItemFromAllWarehouse(
+          newInventory._id,
+          session,
+        );
+
+        if (warehouses && warehouses.length > 0) {
+          await Promise.all(
+            warehouses.map(async (warehouse) =>
+              this.warehouseService.addItem(
+                warehouse,
+                {
+                  id: newInventory._id,
+                  type: ItemEnum.INVENTORY,
+                },
+                session,
+              ),
+            ),
+          );
+        }
+
+        return newInventory;
+      },
+    );
   }
 
   async grid(
@@ -83,15 +143,5 @@ export class InventoryService {
     );
 
     return grid;
-  }
-
-  async removeWarehouseFromAllInventory(
-    organizationId: string,
-    warehouseId: string,
-  ): Promise<void> {
-    await this.inventoryRepository.updateMany(
-      { organization: organizationId },
-      { $pull: { warehouses: warehouseId } },
-    );
   }
 }

@@ -72,10 +72,20 @@ export class InventoryRepository {
         {
           $lookup: {
             from: 'warehouses',
-            localField: 'warehouses',
-            foreignField: '_id',
-            as: 'warehousesList',
+            let: {
+              inventoryId: '$_id',
+            },
             pipeline: [
+              {
+                $unwind: '$items',
+              },
+              {
+                $match: {
+                  $expr: {
+                    $eq: ['$items.id', '$$inventoryId'],
+                  },
+                },
+              },
               {
                 $project: {
                   _id: 1,
@@ -83,6 +93,7 @@ export class InventoryRepository {
                 },
               },
             ],
+            as: 'warehouses',
           },
         },
       ],
@@ -130,7 +141,9 @@ export class InventoryRepository {
           price: {
             $toString: '$price',
           },
-          warehouses: '$warehousesList',
+          warehouses: 1,
+          createdAt: 1,
+          updatedAt: 1,
         },
       },
     );

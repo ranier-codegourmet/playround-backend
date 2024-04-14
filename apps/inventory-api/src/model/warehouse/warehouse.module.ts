@@ -5,7 +5,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { JwtOrgAuthGuard, JwtOrgStrategy } from '@repo/nest-auth-module';
 import * as Joi from 'joi';
 
-import { InventoryModule } from '../inventory/inventory.module';
 import { WarehouseController } from './warehouse.controller';
 import { WarehouseRepository } from './warehouse.repository';
 import { Warehouse, WarehouseSchema } from './warehouse.schema';
@@ -28,7 +27,6 @@ import { WarehouseService } from './warehouse.service';
     MongooseModule.forFeature([
       { name: Warehouse.name, schema: WarehouseSchema },
     ]),
-    InventoryModule,
   ],
   controllers: [WarehouseController],
   providers: [
@@ -40,6 +38,6 @@ import { WarehouseService } from './warehouse.service';
       useClass: JwtOrgAuthGuard,
     },
   ],
-  exports: [],
+  exports: [WarehouseService],
 })
 export class WarehouseModule {}

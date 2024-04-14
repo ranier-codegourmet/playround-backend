@@ -33,17 +33,22 @@ export class InventoryController {
   @Post()
   async createInventory(
     @UseUserOrgCredentials() userOrgCrentials: UserOrganizationCredentials,
-    @Body() inventory: CreateInventoryDTO,
+    @Body() payload: CreateInventoryDTO,
   ) {
     this.logger.log(
-      `Creating inventory: ${inventory.name} by ${userOrgCrentials.user.email} for ${userOrgCrentials.organization.id}`,
+      `Creating inventory: ${payload.name} by ${userOrgCrentials.user.email} for ${userOrgCrentials.organization.id}`,
     );
 
-    const newInventory = await this.inventoryService.create({
-      ...inventory,
-      price: inventory.price.replace(/,/g, ''),
-      organization: userOrgCrentials.organization.id,
-    });
+    const { warehouses, ...newPayload } = payload;
+
+    const newInventory = await this.inventoryService.create(
+      {
+        ...newPayload,
+        price: newPayload.price.replace(/,/g, ''),
+        organization: userOrgCrentials.organization.id,
+      },
+      warehouses,
+    );
 
     return {
       data: newInventory,
@@ -69,17 +74,23 @@ export class InventoryController {
   @Put('/:id')
   async updateInventory(
     @UseUserOrgCredentials() userOrgCrentials: UserOrganizationCredentials,
-    @Body() inventory: UpdateInventoryDTO,
+    @Body() payload: UpdateInventoryDTO,
     @Param('id', new ValidateObjectIdPipe()) id: string,
   ) {
     this.logger.log(
-      `Updating inventory: ${inventory.name} by ${userOrgCrentials.user.email} for ${userOrgCrentials.organization.id}`,
+      `Updating inventory: ${payload.name} by ${userOrgCrentials.user.email} for ${userOrgCrentials.organization.id}`,
     );
 
-    const updatedInventory = await this.inventoryService.updateById(id, {
-      ...inventory,
-      ...(inventory.price && { price: inventory.price.replace(/,/g, '') }),
-    });
+    const { warehouses, ...newPayload } = payload;
+
+    const updatedInventory = await this.inventoryService.updateById(
+      id,
+      {
+        ...newPayload,
+        ...(newPayload.price && { price: newPayload.price.replace(/,/g, '') }),
+      },
+      warehouses,
+    );
 
     return {
       data: updatedInventory,

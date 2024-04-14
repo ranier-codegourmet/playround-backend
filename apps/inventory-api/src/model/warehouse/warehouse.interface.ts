@@ -1,5 +1,9 @@
 import { MongoSortOrderEnum } from '@repo/nest-basic-types';
 
+export enum ItemEnum {
+  INVENTORY = 'INVENTORY',
+}
+
 export type RepositoryWarehouseSort = {
   name?: MongoSortOrderEnum;
   createdAt?: MongoSortOrderEnum;

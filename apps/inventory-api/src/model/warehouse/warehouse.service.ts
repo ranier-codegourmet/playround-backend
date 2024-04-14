@@ -1,17 +1,15 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { MongoSortOrderEnum, SortOrderEnum } from '@repo/nest-basic-types';
+import { ClientSession } from 'mongoose';
 
-import { InventoryService } from '../inventory/inventory.service';
 import { WarehouseGridDTO } from './warehouse.dto';
+import { ItemEnum } from './warehouse.interface';
 import { WarehouseRepository } from './warehouse.repository';
 import { Warehouse } from './warehouse.schema';
 
 @Injectable()
 export class WarehouseService {
-  constructor(
-    private readonly warehouseRepository: WarehouseRepository,
-    private readonly inventoryService: InventoryService,
-  ) {}
+  constructor(private readonly warehouseRepository: WarehouseRepository) {}
 
   async create(payload: Partial<Warehouse>) {
     const warehouse = await this.warehouseRepository.findOne({
@@ -28,7 +26,9 @@ export class WarehouseService {
         name: payload.name,
       },
       payload,
-      { projection: { __v: 0 } },
+      {
+        upsert: true,
+      },
     );
   }
 
@@ -52,9 +52,7 @@ export class WarehouseService {
       throw new BadRequestException('Warehouse with this name already exists');
     }
 
-    return this.warehouseRepository.findOneAndUpdate({ _id: id }, warehouse, {
-      projection: { __v: 0 },
-    });
+    return this.warehouseRepository.findOneAndUpdate({ _id: id }, warehouse);
   }
 
   async grid(
@@ -96,11 +94,50 @@ export class WarehouseService {
       throw new BadRequestException('Warehouse not found');
     }
 
-    await this.inventoryService.removeWarehouseFromAllInventory(
-      warehouse.organization,
-      id,
+    await this.warehouseRepository.deleteById(id);
+  }
+
+  async addItem(
+    warehouseId: string,
+    item: {
+      id: string;
+      type: ItemEnum;
+    },
+    session?: ClientSession,
+  ): Promise<Warehouse> {
+    const warehouse = await this.warehouseRepository.findById(warehouseId);
+
+    if (!warehouse) {
+      throw new BadRequestException('Warehouse not found');
+    }
+
+    const existingItem = warehouse.items.find(
+      (i) => i.id === item.id && i.type === item.type,
     );
 
-    await this.warehouseRepository.deleteById(id);
+    if (existingItem) {
+      return warehouse;
+    }
+
+    return this.warehouseRepository.findOneAndUpdate(
+      { _id: warehouseId },
+      { $push: { items: item } },
+      { session },
+    );
+  }
+
+  async removeItemFromAllWarehouse(
+    itemId: string,
+    session?: ClientSession,
+  ): Promise<void> {
+    await this.warehouseRepository.updateMany(
+      {},
+      {
+        $pull: { items: { id: itemId } },
+      },
+      session,
+    );
+
+    return;
   }
 }

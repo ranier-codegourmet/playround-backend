@@ -5,6 +5,18 @@ import mongoose from 'mongoose';
   timestamps: true,
   toJSON: {
     getters: true,
+    virtuals: true,
+    transform: (doc, ret) => {
+      delete ret.id;
+      delete ret.__v;
+    },
+  },
+  toObject: {
+    virtuals: true,
+    transform: (doc, ret) => {
+      delete ret.id;
+      delete ret.__v;
+    },
   },
 })
 export class Inventory {
@@ -52,17 +64,6 @@ export class Inventory {
     required: true,
   })
   organization: string;
-
-  @Prop({
-    type: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Warehouse',
-        index: true,
-      },
-    ],
-  })
-  warehouses: string[];
 }
 
 export const InventorySchema = SchemaFactory.createForClass(Inventory);
